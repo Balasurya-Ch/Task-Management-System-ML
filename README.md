@@ -1,6 +1,7 @@
 <div align="center">
 
 # NLP-Powered Task Intelligence System
+
 ### Operational Productivity · Natural Language Processing · ML Deployment
 
 [![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
@@ -9,43 +10,48 @@
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 [![Status](https://img.shields.io/badge/Status-Complete-brightgreen?style=flat-square)]()
 
-**Domain:** ML Engineering · NLP · Operational Workflow Automation
-**Stack:** Python, Flask, spaCy, scikit-learn, Jupyter
-**Deployment:** Local Flask web application
+| | |
+|---|---|
+| **Domain** | ML Engineering · NLP · Operational Workflow Automation |
+| **Stack** | Python, Flask, spaCy, scikit-learn, Jupyter |
+| **Deployment** | Local Flask web application (localhost:5000) |
+| **Use Case** | Automated task classification and priority scoring from free-text input |
 
 </div>
 
 ---
 
-## Executive Summary
+## The Business Problem
 
-This project builds a machine learning system that processes unstructured natural language task descriptions and automatically classifies, prioritizes, and organizes them into actionable workflow items. Rather than requiring structured input, the system interprets free-text descriptions — the way people actually communicate work — and surfaces priority actions through a web interface.
+Operational teams spend a disproportionate amount of time on the lowest-value part of their workflow: reading unstructured inputs (emails, messages, notes), deciding what category each item belongs to, and assigning a priority level before any actual work begins. This first-pass triage is manual, inconsistent, and doesn't scale.
 
-The underlying architecture demonstrates a production-capable NLP pipeline applicable to enterprise task routing, customer service triage, and operational workflow automation.
+**The question:** Can a machine handle the classification and prioritization of incoming task descriptions reliably enough to route them to the right queue automatically — so that analysts spend time on analysis, not triage?
 
 ---
 
 ## Challenge
 
-Operational teams generate task backlogs in unstructured formats — emails, messages, verbal notes — that require manual interpretation before they can be acted on. This creates a bottleneck: someone must read, classify, and prioritize each item before the right person can act on it.
+The technical challenge was building a system that accepts completely unstructured natural language — the way people actually communicate work, not the way a form requires them to format it — and extracts structured, actionable output reliably.
 
-The technical challenge was building an NLP system that could reliably extract intent and urgency from varied, informal text inputs and map them to structured task categories — without requiring the user to conform to rigid input schemas.
+Free-text task descriptions are messy: variable length, informal language, missing context, inconsistent terminology across users. A rule-based system would fail on edge cases. A classification model needed enough labeled diversity to generalize, and the NLP preprocessing layer needed to normalize the input sufficiently before the model ever saw it.
+
+Deployment also mattered. A Jupyter notebook that stays on a local machine has no operational value. The system needed to be accessible through a browser interface.
 
 ---
 
 ## Action
 
-**NLP Pipeline: spaCy**
-spaCy's en_core_web_sm model was used for tokenization, part-of-speech tagging, and named entity recognition. Text preprocessing included lemmatization and stop-word filtering to normalize input variability before feature extraction.
+**spaCy NLP Pipeline — Input Normalization**
+The `en_core_web_sm` spaCy model handled tokenization, part-of-speech tagging, lemmatization, and named entity recognition. Stop-word filtering and lemmatization normalized the input before feature extraction — reducing vocabulary noise and improving model generalization across different users' phrasing styles.
 
-**Classification Model**
-A scikit-learn classifier was trained on labeled task examples to predict task category and priority tier. The model was evaluated on held-out data with attention to precision across minority categories — ensuring the system did not default to the most common class.
+**scikit-learn Classifier — Task Categorization**
+A classification model was trained on labeled task examples to predict both category and priority tier. Model evaluation focused on precision-recall across all classes (not just accuracy), explicitly handling class imbalance in the training set to prevent the model from defaulting to the most common category.
 
-**Flask Web Application**
-The trained model and NLP pipeline were deployed via a Flask application, creating a browser-accessible interface where users submit free-text task descriptions and receive structured, prioritized output in real time.
+**Flask Web Application — From Model to Interface**
+The trained pipeline was wrapped in a Flask application that serves a browser-accessible form at localhost:5000. Users submit free-text descriptions; the application returns structured output in real time. This transforms the model from an experiment into a usable tool.
 
-**Jupyter Notebook: Experimental Pipeline**
-The full model development process — data exploration, feature engineering, model selection, and evaluation — is documented in final.ipynb for reproducibility and extension.
+**Jupyter Notebook — Full Development Record**
+`final.ipynb` documents the complete development pipeline: data exploration, preprocessing decisions, model selection rationale, and evaluation metrics. The notebook serves as both a reproducibility record and an extension point for future model improvements.
 
 ---
 
@@ -53,70 +59,75 @@ The full model development process — data exploration, feature engineering, mo
 
 | Capability | Detail |
 |---|---|
-| Input format | Unstructured natural language (free text) |
+| Input | Unstructured free-text task descriptions |
 | Output | Classified task category + priority score |
 | Deployment | Flask web app (localhost:5000) |
-| NLP model | spaCy en_core_web_sm |
-| ML framework | scikit-learn |
-| Extensibility | Modular pipeline — replaceable classifier, expandable categories |
+| NLP layer | spaCy en_core_web_sm — tokenization, lemmatization, NER |
+| Classification | scikit-learn — precision-recall optimized |
+| Cold start | No structured input required from user |
+| Extensibility | Modular pipeline — classifier and NLP model are independently swappable |
 
-The system demonstrates a complete ML engineering cycle: from raw text input through NLP preprocessing, model inference, and web-based output delivery. The architecture is directly extensible to enterprise applications including service desk triage, email routing, and operations workflow management.
+**Why this matters at scale:** Enterprise service desks, operations centers, and customer support teams handle thousands of unstructured inputs per day. A triage system that automates the first-pass classification doesn't just save time — it standardizes routing logic and creates a data trail that enables backlog analysis, capacity planning, and workflow optimization over time.
 
 ---
 
 ## How to Run
 
 ```bash
-# 1. Clone the repository
+# Clone the repository
 git clone https://github.com/Balasurya-Ch/Task-Management-System-ML.git
 cd Task-Management-System-ML
 
-# 2. Create and activate a virtual environment
+# Create and activate virtual environment
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate        # Mac/Linux
+venv\Scripts\activate           # Windows
 
-# 3. Install dependencies
+# Install dependencies
 pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 
-# 4. Download spaCy language model
+# Download spaCy model
 python -m spacy download en_core_web_sm
 
-# 5. Launch the web application
+# Launch application
 python app.py
-# Navigate to http://localhost:5000
+# Open browser: http://localhost:5000
 ```
 
-For model exploration: Open final.ipynb in Jupyter Lab or VS Code.
+For model exploration: open `final.ipynb` in Jupyter Lab or VS Code.
 
 ---
 
 ## Technical Architecture
 
 ```
-User Input (Free Text via Web Form)
-        |
-        v
-spaCy NLP Pipeline (Tokenization -- Lemmatization -- Entity Recognition)
-        |
-        v
-Feature Extraction
-        |
-        v
-scikit-learn Classifier -- Task Category + Priority Label
-        |
-        v
-Flask Response -- Structured Task Output in Browser
+Free-Text Input (Browser Form)
+            |
+            v
+    spaCy NLP Pipeline
+    Tokenization | Lemmatization | Stop-word filtering | NER
+            |
+            v
+    Feature Extraction
+            |
+            v
+    scikit-learn Classifier
+    Task category | Priority tier
+            |
+            v
+    Flask Response
+    Structured output rendered in browser
 ```
 
-**Folder structure:**
+**Repository structure:**
 ```
 Task-Management-System-ML/
-├── app.py
-├── final.ipynb
-├── requirements.txt
-├── static/
-├── templates/
+├── app.py              Flask application entry point
+├── final.ipynb         Model development and evaluation
+├── requirements.txt    Dependency manifest
+├── static/             CSS and static assets
+├── templates/          HTML templates
 └── README.md
 ```
 
@@ -124,12 +135,16 @@ Task-Management-System-ML/
 
 ## Key Insights
 
-NLP-based task classification is most valuable not when replacing human judgment but when handling the high-volume, low-complexity triage that consumes disproportionate analyst time. Automating the first-pass classification of incoming work items — routing them to the right queue before a human reviews — can meaningfully reduce backlog handling time in operational environments.
+The most important design decision in this system is the separation between the NLP preprocessing layer and the classification layer. They are independently swappable: the spaCy model can be upgraded to a larger transformer (`en_core_web_trf`) for higher accuracy on complex input without touching the classifier. The classifier can be swapped for a different algorithm without rebuilding the NLP pipeline.
 
-The spaCy pipeline's modularity means the underlying NLP stage can be upgraded to a larger transformer model for improved accuracy on more complex or domain-specific task language without restructuring the application.
+This modularity is what makes the system practical for extension. A production deployment would replace the scikit-learn classifier with a model trained on domain-specific task data and add a feedback loop to capture misclassifications — improving accuracy over time with real usage data.
+
+The business analogy: this is architecturally identical to what powers enterprise service-desk ticket classification, customer email routing, and operations workflow systems. The difference is scale, training data, and feedback infrastructure — not the fundamental design.
 
 ---
 
 <div align="center">
-<sub>Balasurya Chandana · Business & Data Analyst · linkedin.com/in/balasurya-chandana</sub>
+
+**[Balasurya Chandana](https://linkedin.com/in/balasurya-chandana)** · Business & Data Analyst · [linkedin.com/in/balasurya-chandana](https://linkedin.com/in/balasurya-chandana)
+
 </div>
